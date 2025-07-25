@@ -8,8 +8,7 @@ response = ollama.chat(
             'The errors you find in normal speech are fine -- such as an incomplete sentence, misconceptions --'
             'however, some of the errors are introduced by the speech recognition system. Identify which utterances '
             "have errors introduced by the transcription what weren't present in the original utterance."
-            "At the end of the response print the entire transcript line by line, with a <flag> token at the beginning"
-            "of utterances with likely errors. "
+            "\n"
             "Transcript: "
             "	tutor	I had to start a new session, so I have to get the lesson uploaded.	\n"
             "	tutor	Okay, so we're gonna get started on	\n"
