@@ -1,7 +1,7 @@
 import ollama
 
 response = ollama.chat(
-    model='deepseek-r1:1.5b',
+    model='deepseek-r1:70b',
     messages=[
         {'role': 'user', 'content':
             'I am going to give you a transcript from a classroom. However, the speech recognition system has some errors. '
