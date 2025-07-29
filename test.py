@@ -34,7 +34,7 @@ for i in range(3, length_transcript-3):
     print(prompt_line)
 
     response = ollama.chat(
-        model='deepseek-r1:1.5b',
+        model='deepseek-r1:70b',
         messages=[
             {'role': 'user', 'content': prompt_line}
         ]
