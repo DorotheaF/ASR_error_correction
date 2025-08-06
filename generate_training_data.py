@@ -6,7 +6,7 @@ import pandas as pd
 import unsloth
 
 model, tokenizer = unsloth.FastModel.from_pretrained(
-    model_name = "DeepSeek-R1-Distill-Llama-70B-bnb-4bit", #TODO
+    model_name = "unsloth/DeepSeek-R1-Distill-Llama-70B-bnb-4bit", #TODO
     max_seq_length = 2048, # Choose any for long context!
     load_in_4bit = True,  # 4 bit quantization to reduce memory
     load_in_8bit = False, # [NEW!] A bit more accurate, uses 2x memory
