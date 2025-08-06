@@ -11,7 +11,7 @@ model, tokenizer = unsloth.FastModel.from_pretrained(
     load_in_4bit = True,  # 4 bit quantization to reduce memory
     load_in_8bit = False, # [NEW!] A bit more accurate, uses 2x memory
     full_finetuning = False, # [NEW!] We have full finetuning now!
-    token = "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", # use one if using gated models #TODO
+    token = "", # use one if using gated models #TODO
 )
 
 def seperate_transcripts(transcript):
