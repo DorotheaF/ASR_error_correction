@@ -3,16 +3,8 @@ import json
 import os
 # import ollama
 import pandas as pd
-import unsloth
+from unsloth import FastLanguageModel
 
-model, tokenizer = unsloth.FastModel.from_pretrained(
-    model_name = "unsloth/DeepSeek-R1-Distill-Llama-70B-bnb-4bit", #TODO
-    max_seq_length = 2048, # Choose any for long context!
-    load_in_4bit = True,  # 4 bit quantization to reduce memory
-    load_in_8bit = False, # [NEW!] A bit more accurate, uses 2x memory
-    full_finetuning = False, # [NEW!] We have full finetuning now!
-    token = os.getenv("HUGGING_FACE"), # use one if using gated models #TODO
-)
 
 def seperate_transcripts(transcript):
     train_prompt_style = """Below is an instruction that describes a task, paired with an input that provides further context. 
@@ -49,6 +41,7 @@ def seperate_transcripts(transcript):
             "text": texts,
         }
 def generate_error_thinking(transcript):
+    #have it check if the edited utterance and utterance match exactly, and if not explain what error in the transcription is any why it occurred
     prompt_style = """Below is an instruction that describes a task, paired with an input that provides further context. 
     Write a response that appropriately completes the request. 
     Before answering, think carefully about the question and create a step-by-step chain of thoughts to ensure a logical and accurate response.
@@ -60,16 +53,14 @@ def generate_error_thinking(transcript):
     through the changes you have made. 
 
     ### ASR:
-    <context>{} </context>
-    <utterance>{}</utterance>
-    <context>{}</context>
+    <context> {} </context>
+    <utterance> {} </utterance>
+    <context> {} </context>
 
     ### Response:
-    <edited_utterance>{}</edited_utterance>
-    <think>
-    {}
-    </think>"""
-    unsloth.FastLanguageModel.for_inference(model)
+    <edited_utterance> {} </edited_utterance>
+    """
+    FastLanguageModel.for_inference(model)
 
     length_transcript = len(transcript)
     for i in range(3, length_transcript-3):
@@ -83,18 +74,20 @@ def generate_error_thinking(transcript):
                        transcript.iloc[i+2,3] + ": " + transcript.iloc[i+2,5]) + "\n" +
                        transcript.iloc[i+3,3] + ": " + transcript.iloc[i+3,5])
 
-        inputs = tokenizer([prompt_style.format(pre_context, utterance,post_context, edited_utterance, "")], return_tensors="pt").to("cuda")
+        input_text = prompt_style.format(pre_context, utterance,post_context, edited_utterance, "")
 
-        print(inputs)
+        inputs = tokenizer([input_text], return_tensors="pt").to("cuda")
 
-        # outputs = model.generate(
-        #     input_ids=inputs.input_ids,
-        #     attention_mask=inputs.attention_mask,
-        #     max_new_tokens=1200,
-        #     use_cache=True,
-        # )
-        # response = tokenizer.batch_decode(outputs)
-        # print(response[0].split("### Response:")[1])
+        print(input_text)
+
+        outputs = model.generate(
+            input_ids=inputs.input_ids,
+            attention_mask=inputs.attention_mask,
+            max_new_tokens=1200,
+            use_cache=True,
+        )
+        response = tokenizer.batch_decode(outputs)
+        print(response[0]) #.split("### Response:")[1])
 
 
         # transcript.iloc[i,11] = response['message']['content']
@@ -116,16 +109,30 @@ def cycle_through_transcripts(location, save_path):
     for file in transcripts:
         transcript = pd.read_excel(file)
         # transcript = seperate_transcripts(transcript)
-        generate_error_thinking()
+        transcript = transcript.dropna(how="any")
+        generate_error_thinking(transcript)
         # prompt_list = prompt_list + transcript
 
     # with open (save_path + "ASR_human_training_all.json", "w") as outfile:
     #     outfile.write(json.dumps(prompt_list))
 
 
+print("started")
 
 location = "data/raw/"
 save_path = "/data/transcript_segmented_only/"
+
+model, tokenizer = FastLanguageModel.from_pretrained(
+    # model_name = "unsloth/DeepSeek-R1-Distill-Llama-70B-bnb-4bit", #TODO
+    model_name = "unsloth/DeepSeek-R1-Distill-Qwen-1.5B-unsloth-bnb-4bit",
+    max_seq_length = 2048, # Choose any for long context!
+    load_in_4bit = True,  # 4 bit quantization to reduce memory
+    load_in_8bit = False, # [NEW!] A bit more accurate, uses 2x memory
+    full_finetuning = False, # [NEW!] We have full finetuning now!
+    token = os.getenv("HUGGING_FACE"), # use one if using gated models #TODO
+)
+
+print("loaded model")
 
 cycle_through_transcripts(location, save_path)
 
