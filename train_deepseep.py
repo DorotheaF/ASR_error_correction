@@ -1,69 +1,67 @@
-# from unsloth import FastLanguageModel, FastModel
+import json
+
+from unsloth import FastLanguageModel, FastModel
 import torch
 import os
 from trl import SFTTrainer, SFTConfig
-from datasets import load_dataset
-max_seq_length = 2048 # Supports RoPE Scaling internally, so choose any!
-# Get LAION dataset
-url = "https://huggingface.co/datasets/laion/OIG/resolve/main/unified_chip2.jsonl"
-dataset = load_dataset("json", data_files = {"train" : url}, split = "train")
+from datasets import Dataset
 
-print(dataset[0])
 
-#
-# # 4bit pre quantized models we support for 4x faster downloading + no OOMs.
-# fourbit_models = [
-# "DeepSeek-R1-Distill-Llama-70B-bnb-4bit"
-# ] # More models at https://huggingface.co/unsloth
-#
-# model, tokenizer = FastModel.from_pretrained(
-#     model_name = "unsloth/DeepSeek-R1-Distill-Llama-70B-bnb-4bit",
-#     max_seq_length = 2048, # Choose any for long context!
-#     load_in_4bit = True,  # 4 bit quantization to reduce memory
-#     load_in_8bit = False, # [NEW!] A bit more accurate, uses 2x memory
-#     full_finetuning = False, # [NEW!] We have full finetuning now!
-#     token = os.getenv("HUGGING_FACE"), # use one if using gated models #TODO
-# )
-#
-# # Do model patching and add fast LoRA weights
-# model = FastLanguageModel.get_peft_model(
-#     model,
-#     r = 16,
-#     target_modules = ["q_proj", "k_proj", "v_proj", "o_proj",
-#                       "gate_proj", "up_proj", "down_proj",],
-#     lora_alpha = 16,
-#     lora_dropout = 0, # Supports any, but = 0 is optimized
-#     bias = "none",    # Supports any, but = "none" is optimized
-#     # [NEW] "unsloth" uses 30% less VRAM, fits 2x larger batch sizes!
-#     use_gradient_checkpointing = "unsloth", # True or "unsloth" for very long context
-#     random_state = 3407,
-#     max_seq_length = max_seq_length,
-#     use_rslora = False,  # We support rank stabilized LoRA
-#     loftq_config = None, # And LoftQ
-# )
-#
-# trainer = SFTTrainer(
-#     model = model,
-#     train_dataset = dataset,
-#     tokenizer = tokenizer,
-#     args = SFTConfig(
-#         max_seq_length = max_seq_length,
-#         per_device_train_batch_size = 2,
-#         gradient_accumulation_steps = 4,
-#         warmup_steps = 10,
-#         max_steps = 60,
-#         logging_steps = 1,
-#         output_dir = "outputs",
-#         optim = "adamw_8bit",
-#         seed = 3407,
-#     ),
-# )
-# trainer.train()
-#
-#
-# FastLanguageModel.for_inference(model)
-#
-# model.save_pretrained("finetuned_trial_1_deepseek70")
+with open("data/reasoning_generated/ASR_human_training_test.json", "r") as file:
+    prompt_list = json.load(file)
+
+dataset = Dataset.from_dict(prompt_list)
+
+model, tokenizer = FastModel.from_pretrained(
+    model_name = "unsloth/DeepSeek-R1-Distill-Llama-70B-bnb-4bit", #TODO
+    # model_name = "unsloth/DeepSeek-R1-Distill-Qwen-1.5B-unsloth-bnb-4bit",
+    max_seq_length = 2048, # Choose any for long context!
+    load_in_4bit = True,  # 4 bit quantization to reduce memory
+    load_in_8bit = False, # [NEW!] A bit more accurate, uses 2x memory
+    full_finetuning = False, # [NEW!] We have full finetuning now!
+    token = os.getenv("HUGGING_FACE"), # use one if using gated models #TODO
+)
+
+# Do model patching and add fast LoRA weights
+model = FastLanguageModel.get_peft_model(
+    model,
+    r = 16,
+    target_modules = ["q_proj", "k_proj", "v_proj", "o_proj",
+                      "gate_proj", "up_proj", "down_proj",],
+    lora_alpha = 16,
+    lora_dropout = 0, # Supports any, but = 0 is optimized
+    bias = "none",    # Supports any, but = "none" is optimized
+    # [NEW] "unsloth" uses 30% less VRAM, fits 2x larger batch sizes!
+    use_gradient_checkpointing = "unsloth", # True or "unsloth" for very long context
+    random_state = 3407,
+    max_seq_length = 2048, # Supports RoPE Scaling internally, so choose any!
+    use_rslora = False,  # We support rank stabilized LoRA
+    loftq_config = None, # And LoftQ
+)
+
+trainer = SFTTrainer(
+    model = model,
+    train_dataset = dataset,
+    tokenizer = tokenizer,
+    args = SFTConfig(
+        max_seq_length = 2048,
+        per_device_train_batch_size = 2,
+        gradient_accumulation_steps = 4,
+        warmup_steps = 10,
+        max_steps = 60,
+        logging_steps = 1,
+        output_dir = "outputs",
+        optim = "adamw_8bit",
+        seed = 3407,
+    ),
+)
+trainer.train()
+
+
+FastLanguageModel.for_inference(model)
+
+model.save_pretrained("finetuned_trial_1_deepseek1.5")
+
 # tokenizer.save_pretrained("finetuned_trial_1_deepseek70")
 # # Go to https://github.com/unslothai/unsloth/wiki for advanced tips like
 # # (1) Saving to GGUF / merging to 16bit for vLLM
