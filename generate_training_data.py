@@ -99,7 +99,7 @@ def generate_error_thinking(transcript):
 
         # print(response['message']['content'])
 
-    transcript.to_excel("test_file_prepped.xlsx")
+    transcript.to_excel(save_path + "test_file_prepped.xlsx")
 
 def cycle_through_transcripts(location, save_path):
     transcripts= glob.glob(location + "*.xlsx")
@@ -121,11 +121,11 @@ def cycle_through_transcripts(location, save_path):
 print("started")
 
 location = "data/raw/"
-save_path = "/data/transcript_segmented_only/"
+save_path = "/data/reasoning_generated/"
 
 model, tokenizer = FastLanguageModel.from_pretrained(
-    # model_name = "unsloth/DeepSeek-R1-Distill-Llama-70B-bnb-4bit", #TODO
-    model_name = "unsloth/DeepSeek-R1-Distill-Qwen-1.5B-unsloth-bnb-4bit",
+    model_name = "unsloth/DeepSeek-R1-Distill-Llama-70B-bnb-4bit", #TODO
+    # model_name = "unsloth/DeepSeek-R1-Distill-Qwen-1.5B-unsloth-bnb-4bit",
     max_seq_length = 2048, # Choose any for long context!
     load_in_4bit = True,  # 4 bit quantization to reduce memory
     load_in_8bit = False, # [NEW!] A bit more accurate, uses 2x memory
