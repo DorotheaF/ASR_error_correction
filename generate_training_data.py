@@ -50,21 +50,28 @@ def generate_error_thinking(transcript):
     transcripts must be preserved so that researchers can understand how students and tutors talk with each other. 
     Here are 7 lines from the transcript. You have looked at the middle utterance and provided a corrected middle utterance,
     using your knowledge about speech recognition system errors. Now, teach the new annotator by walking through your 
-    thought process about how you got from the <middle> utterance to the <corrected_middle> utterance. If the utterance
-    did not need any correction, explain why you think the ASR system got it perfectly correct instead of introducing errors.
+    thought process. Start by repeating the <middle> and <corrected_middle> utterances to check if they match exactly. 
+    If they do, explain why you think the ASR system got it perfectly correct instead of introducing errors. If they 
+    differ, explain what the errors are in the <middle> utterance that you corrected in the <corrected_middle> utterance,
+    and explain why the ASR system made those errors. Be concise. 
 
     ### ASR:
     <context> {} </context>
-    <middle> {} </middle>
+    <middle> {} </middle> 
     <context> {} </context>
-
-    ### Response:
+    
+    ### Corrected:
     <corrected_middle> {} </corrected_middle>
+    
+    ### Response:
+    {}
     """
     FastLanguageModel.for_inference(model)
 
     length_transcript = len(transcript)
+    transcript["Response"] = ""
     for i in range(3, length_transcript-3):
+        print(i)
         utterance = transcript.iloc[i,3] + ": " + transcript.iloc[i,5]
         edited_utterance = transcript.iloc[i,3] + ": " + transcript.iloc[i,4]
         pre_context = ((transcript.iloc[i-3,3] + ": " + transcript.iloc[i-3,5] + "\n" +
@@ -79,7 +86,7 @@ def generate_error_thinking(transcript):
 
         inputs = tokenizer([input_text], return_tensors="pt").to("cuda")
 
-        print(input_text)
+        # print(input_text)
 
         outputs = model.generate(
             input_ids=inputs.input_ids,
@@ -107,8 +114,11 @@ def cycle_through_transcripts(location, save_path):
 
     prompt_list = {}
 
+
+
     for file in transcripts:
         transcript = pd.read_excel(file)
+        transcript.to_excel(save_path + "detele.xlsx")
         # transcript = seperate_transcripts(transcript)
         transcript = transcript.dropna(how="any")
         generate_error_thinking(transcript)
@@ -121,7 +131,7 @@ def cycle_through_transcripts(location, save_path):
 print("started")
 
 location = "data/raw/"
-save_path = "/data/reasoning_generated/"
+save_path = "data/reasoning_generated/"
 
 model, tokenizer = FastLanguageModel.from_pretrained(
     model_name = "unsloth/DeepSeek-R1-Distill-Llama-70B-bnb-4bit", #TODO
