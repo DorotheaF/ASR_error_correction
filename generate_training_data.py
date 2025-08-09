@@ -156,7 +156,7 @@ def format_as_dataset(transcript, save_path):
 
             training_text = prompt_style.format(pre_context, utterance, post_context, reasoning, utterance, errors, edited_utterance) + EOS_token
 
-            transcript.iloc[i,12] = training_text
+            transcript.iloc[i,13] = training_text #TODO 12
         except:
             print("no think token")
             failures +=1
