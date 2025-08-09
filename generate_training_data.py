@@ -145,21 +145,21 @@ def format_as_dataset(transcript, save_path):
                          transcript.iloc[i + 2, 3] + ": " + transcript.iloc[i + 2, 5]) + "\n" +
                         transcript.iloc[i + 3, 3] + ": " + transcript.iloc[i + 3, 5])
 
-        try:
-            reasoning = transcript.iloc[i, 11].split("</think>")[1]
+        # try:
+        reasoning = transcript.iloc[i, 11].split("</think>")[1]
 
-            if utterance == edited_utterance:
-                errors = "There are no errors introduced by the ASR system"
-                edited_utterance = "N/A"
-            else:
-                errors = "There are likely errors introduced by the ASR system"
+        if utterance == edited_utterance:
+            errors = "There are no errors introduced by the ASR system"
+            edited_utterance = "N/A"
+        else:
+            errors = "There are likely errors introduced by the ASR system"
 
-            training_text = prompt_style.format(pre_context, utterance, post_context, reasoning, utterance, errors, edited_utterance) + EOS_token
+        training_text = prompt_style.format(pre_context, utterance, post_context, reasoning, utterance, errors, edited_utterance) + EOS_token
 
-            transcript.iloc[i,12] = training_text
-        except:
-            print("no think token")
-            failures +=1
+        transcript.iloc[i,12] = training_text
+        # except:
+        #     print("no think token")
+            # failures +=1
     transcript.to_excel(save_path + "test_file_train.xlsx", index=False)
     print(failures)
     return transcript
