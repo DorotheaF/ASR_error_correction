@@ -179,7 +179,7 @@ def cycle_through_transcripts(location, save_path):
         transcript_thinking = pd.read_excel("data/reasoning_generated/test_file_prepped.xlsx")
         transcript_formatted = format_as_dataset(transcript_thinking, save_path)
         transcript_formatted = transcript_formatted[transcript_formatted['training_prompt']!=""]
-        # print(transcript_formatted["training_prompt"])
+        print(transcript_formatted["training_prompt"])
         prompt_list = prompt_list + transcript_formatted["training_prompt"].values.tolist()
 
     print(prompt_list)
