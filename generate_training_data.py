@@ -182,9 +182,11 @@ def cycle_through_transcripts(location, save_path):
         # print(transcript_formatted["training_prompt"])
         prompt_list = prompt_list + transcript_formatted["training_prompt"].values.tolist()
 
+    print(prompt_list)
 
     with open (save_path + "ASR_human_training_test.json", "w") as outfile:
         outfile.write(json.dumps(prompt_list))
+
 
 
 
