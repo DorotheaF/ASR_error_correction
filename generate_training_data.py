@@ -146,7 +146,7 @@ def format_as_dataset(transcript, save_path):
                         transcript.iloc[i + 3, 3] + ": " + transcript.iloc[i + 3, 5])
 
         # try:
-        reasoning = transcript.iloc[i, 11].split("</think>")[1]
+        reasoning = transcript.iloc[i, 12].split("</think>")[1] #TODO 11
 
         if utterance == edited_utterance:
             errors = "There are no errors introduced by the ASR system"
