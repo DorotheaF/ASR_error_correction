@@ -216,8 +216,8 @@ def cycle_through_transcripts(location, save_path, generate):
 
 
 def make_mega_dataset():
-    prompts_reasoning = glob.glob("data/reasoning_generated/" + "*.xlsx")
-    prompts_plain = glob.glob("data/transcripts_no_reasoning/" + "*.xlsx")
+    prompts_reasoning = glob.glob("data/reasoning_generated/" + "*.json")
+    prompts_plain = glob.glob("data/transcripts_no_reasoning/" + "*.json")
 
     reasoning_data = []
 
