@@ -269,11 +269,11 @@ print("started")
 # location = "/mnt/c/Users/Dorot/Emotive Computing Dropbox/Dorothea French/ASR_error_correction/data/transcripts_test/"
 # save_path = "/mnt/c/Users/Dorot/Emotive Computing Dropbox/Dorothea French/ASR_error_correction/data/reasoning_generated/"
 
-# location = "data/transcripts/"
-# save_path = "data/reasoning_generated/"
-
-location = "data/transcripts_no_reasoning/"
-save_path = "data/transcripts_no_reasoning/"
+location = "data/transcripts/"
+save_path = "data/reasoning_generated/"
+#
+# location = "data/transcripts_no_reasoning/"
+# save_path = "data/transcripts_no_reasoning/"
 
 model, tokenizer = FastLanguageModel.from_pretrained(
     model_name = "unsloth/DeepSeek-R1-Distill-Llama-70B-bnb-4bit", #TODO
@@ -288,5 +288,5 @@ EOS_token = tokenizer.eos_token
 
 print("loaded model")
 
-cycle_through_transcripts(location, save_path, False)
+cycle_through_transcripts(location, save_path, True)
 
