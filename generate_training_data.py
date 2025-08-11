@@ -53,7 +53,7 @@ def generate_error_thinking(transcript):
     thought process. Start by repeating the <middle> and <corrected_middle> utterances to check if they match exactly. 
     If they do, explain why you think the ASR system got it perfectly correct instead of introducing errors. If they 
     differ, explain what the errors are in the <middle> utterance that you corrected in the <corrected_middle> utterance,
-    and explain why the ASR system made those errors. Be concise. 
+    and explain why the ASR system made those errors.
 
     ### ASR:
     <context> {} </context>
