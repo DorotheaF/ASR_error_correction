@@ -197,7 +197,7 @@ print("started")
 # location = "/mnt/c/Users/Dorot/Emotive Computing Dropbox/Dorothea French/ASR_error_correction/data/transcripts_test/"
 # save_path = "/mnt/c/Users/Dorot/Emotive Computing Dropbox/Dorothea French/ASR_error_correction/data/reasoning_generated/"
 
-location = "data/transcripts_test/"
+location = "data/transcripts/"
 save_path = "data/reasoning_generated/"
 
 model, tokenizer = FastLanguageModel.from_pretrained(
