@@ -191,7 +191,7 @@ def cycle_through_transcripts(location, save_path, generate):
             transcript_thinking = generate_error_thinking(transcript)
             transcript_thinking.to_excel(save_path + file_name + "_generated_reasoning.xlsx", index=False)
             # transcript_thinking = pd.read_excel("data/reasoning_generated/test_file_prepped.xlsx")
-            transcript_formatted = format_as_dataset(transcript_thinking, save_path)
+            transcript_formatted = format_as_dataset(transcript_thinking)
             transcript_formatted = transcript_formatted[transcript_formatted['training_prompt']!=""]
             prompt_list = transcript_formatted["training_prompt"].values.tolist()
             prompts = {}
@@ -205,7 +205,7 @@ def cycle_through_transcripts(location, save_path, generate):
             print(file)
             transcript = pd.read_excel(file)
             transcript = transcript.dropna(how="any")
-            transcript_formatted = format_as_dataset_no_think(transcript, save_path)
+            transcript_formatted = format_as_dataset_no_think(transcript)
             transcript_formatted = transcript_formatted[transcript_formatted['training_prompt']!=""]
             prompt_list = transcript_formatted["training_prompt"].values.tolist()
             prompts = {}
