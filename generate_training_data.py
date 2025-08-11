@@ -208,6 +208,7 @@ def cycle_through_transcripts(location, save_path, generate):
             transcript = pd.read_excel(file)
             transcript = transcript.dropna(how="any")
             transcript['ASR'] = transcript['ASR'].astype(str)
+            transcript['transcript'] = transcript['transcript'].astype(str)
             transcript_formatted = format_as_dataset_no_think(transcript)
             transcript_formatted = transcript_formatted[transcript_formatted['training_prompt']!=""]
             prompt_list = transcript_formatted["training_prompt"].values.tolist()
