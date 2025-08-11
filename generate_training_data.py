@@ -172,7 +172,7 @@ def format_as_dataset_no_think(transcript):
 
         training_text = prompt_style.format(pre_context, utterance, post_context, utterance, errors, edited_utterance) + EOS_token
 
-        transcript.iloc[i,12] = training_text #TODO 12
+        transcript.iloc[i,11] = training_text #TODO 12
     return transcript
 
 def cycle_through_transcripts(location, save_path, generate):
