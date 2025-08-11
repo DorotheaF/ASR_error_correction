@@ -105,8 +105,6 @@ def generate_error_thinking(transcript):
         #     file.write(response['message']['content'])
 
         # print(response['message']['content'])
-
-        transcript.to_excel(save_path + "test_file_prepped.xlsx", index=False)
     return transcript
 
 def format_as_dataset(transcript, save_path):
@@ -160,44 +158,51 @@ def format_as_dataset(transcript, save_path):
         except:
             print("no think token")
             failures +=1
-    transcript.to_excel(save_path + "test_file_train.xlsx", index=False)
     print(failures)
     return transcript
 
 def cycle_through_transcripts(location, save_path):
-    transcripts= glob.glob(location + "*.xlsx")
+    print(location)
+    transcripts = glob.glob(location + "*.xlsx")
     print(transcripts)
 
     prompt_list = []
 
-
-
     for file in transcripts:
+        file_name = file.rsplit("/",1)[1].split(".xlsx")[0]
+        print(file)
         transcript = pd.read_excel(file)
         transcript = transcript.dropna(how="any")
-        # transcript_thinking = generate_error_thinking(transcript)
-        transcript_thinking = pd.read_excel("data/reasoning_generated/test_file_prepped.xlsx")
+        transcript_thinking = generate_error_thinking(transcript)
+        transcript_thinking.to_excel(save_path + file_name + "_generated_reasoning.xlsx", index=False)
+        # transcript_thinking = pd.read_excel("data/reasoning_generated/test_file_prepped.xlsx")
         transcript_formatted = format_as_dataset(transcript_thinking, save_path)
         transcript_formatted = transcript_formatted[transcript_formatted['training_prompt']!=""]
-        # print(transcript_formatted["training_prompt"])
-        prompt_list = prompt_list + transcript_formatted["training_prompt"].values.tolist()
+        prompt_list = transcript_formatted["training_prompt"].values.tolist()
+        prompts = {}
+        prompts["text"] = prompt_list
+        with open(save_path + file_name + "_generated_reasoning_train.json", "w") as outfile:
+            outfile.write(json.dumps(prompts))
+
 
     print(prompt_list)
 
-    with open (save_path + "ASR_human_training_test.json", "w") as outfile:
-        outfile.write(json.dumps(prompt_list))
+
 
 
 
 
 print("started")
 
-location = "C:/Users/Dorot/Emotive Computing Dropbox/Dorothea French/ASR_error_correction/data/transcripts_test"
-save_path = "C:/Users/Dorot/Emotive Computing Dropbox/Dorothea French/ASR_error_correction/data/reasoning_generated/"
+# location = "/mnt/c/Users/Dorot/Emotive Computing Dropbox/Dorothea French/ASR_error_correction/data/transcripts_test/"
+# save_path = "/mnt/c/Users/Dorot/Emotive Computing Dropbox/Dorothea French/ASR_error_correction/data/reasoning_generated/"
+
+location = "data/transcripts_test/"
+save_path = "data/reasoning_generated/"
 
 model, tokenizer = FastLanguageModel.from_pretrained(
-    # model_name = "unsloth/DeepSeek-R1-Distill-Llama-70B-bnb-4bit", #TODO
-    model_name = "unsloth/DeepSeek-R1-Distill-Qwen-1.5B-unsloth-bnb-4bit",
+    model_name = "unsloth/DeepSeek-R1-Distill-Llama-70B-bnb-4bit", #TODO
+    # model_name = "unsloth/DeepSeek-R1-Distill-Qwen-1.5B-unsloth-bnb-4bit",
     max_seq_length = 2048, # Choose any for long context!
     load_in_4bit = True,  # 4 bit quantization to reduce memory
     load_in_8bit = False, # [NEW!] A bit more accurate, uses 2x memory
