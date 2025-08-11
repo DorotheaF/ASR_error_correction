@@ -10,7 +10,9 @@ from datasets import Dataset
 with open("data/reasoning_generated/ASR_human_training_test.json", "r") as file:
     prompt_list = json.load(file)
 
-dataset = Dataset.from_dict(prompt_list)
+prompts = {}
+prompts["text"] = prompt_list
+dataset = Dataset.from_dict(prompts)
 
 model, tokenizer = FastModel.from_pretrained(
     model_name = "unsloth/DeepSeek-R1-Distill-Llama-70B-bnb-4bit", #TODO
