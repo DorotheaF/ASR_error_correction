@@ -104,7 +104,7 @@ def generate_error_thinking(transcript):
         # with open("test.txt", 'w') as file:
         #     file.write(response['message']['content'])
 
-        # print(response['message']['content'])
+        # print(response['message']['content'])`
     return transcript
 
 def format_as_dataset(transcript, save_path):
@@ -144,7 +144,7 @@ def format_as_dataset(transcript, save_path):
                         transcript.iloc[i + 3, 3] + ": " + transcript.iloc[i + 3, 5])
 
         try:
-            reasoning = transcript.iloc[i, 12].split("</think>")[1]
+            reasoning = transcript.iloc[i, 12].split("</think>")[-1].replace(EOS_token, "")
 
             if utterance == edited_utterance:
                 errors = "There are no errors introduced by the ASR system"
