@@ -150,7 +150,6 @@ def format_as_dataset_no_think(transcript):
 
     length_transcript = len(transcript)
     transcript["training_prompt"] = ""
-    failures = 0
     for i in range(3, length_transcript - 3):
         print(i)
         utterance = transcript.iloc[i, 3] + ": " + transcript.iloc[i, 5]
@@ -173,8 +172,7 @@ def format_as_dataset_no_think(transcript):
 
         training_text = prompt_style.format(pre_context, utterance, post_context, utterance, errors, edited_utterance) + EOS_token
 
-        transcript.iloc[i,13] = training_text #TODO 12
-    print(failures)
+        transcript.iloc[i,12] = training_text #TODO 12
     return transcript
 
 def cycle_through_transcripts(location, save_path, generate):
@@ -187,7 +185,9 @@ def cycle_through_transcripts(location, save_path, generate):
             file_name = file.rsplit("/",1)[1].split(".xlsx")[0]
             print(file)
             transcript = pd.read_excel(file)
+            print(len(transcript))
             transcript = transcript.dropna(how="any")
+            print(len(transcript))
             transcript_thinking = generate_error_thinking(transcript)
             transcript_thinking.to_excel(save_path + file_name + "_generated_reasoning.xlsx", index=False)
             # transcript_thinking = pd.read_excel("data/reasoning_generated/test_file_prepped.xlsx")
