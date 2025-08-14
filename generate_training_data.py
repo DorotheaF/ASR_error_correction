@@ -277,7 +277,7 @@ save_path = "data/reasoning_generated/"
 # save_path = "data/transcripts_no_reasoning/"
 
 model, tokenizer = FastLanguageModel.from_pretrained(
-    model_name = "unsloth/DeepSeek-R1-Distill-Llama-70B-bnb-4bit", #TODO
+    model_name = "unsloth/DeepSeek-R1-Distill-Qwen-32B-unsloth-bnb-4bit", #TODO
     # model_name = "unsloth/DeepSeek-R1-Distill-Qwen-1.5B-unsloth-bnb-4bit",
     max_seq_length = 2048, # Choose any for long context!
     load_in_4bit = True,  # 4 bit quantization to reduce memory
