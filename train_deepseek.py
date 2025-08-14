@@ -62,6 +62,7 @@ trainer = SFTTrainer(
         output_dir = "outputs",
         optim = "adamw_8bit",
         seed = 3407,
+        epoch = 3,
     ),
 )
 trainer.train()
