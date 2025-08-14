@@ -75,6 +75,7 @@ def generate_error_thinking(transcript):
         # print(response['message']['content'])`
     return transcript
 
+
 def format_as_dataset(transcript):
 
     prompt_style = """
@@ -220,15 +221,15 @@ def cycle_through_transcripts(location, save_path, generate):
 
 
 def make_mega_dataset():
-    prompts_reasoning = glob.glob("data/reasoning_generated/" + "*.json")
+    # prompts_reasoning = glob.glob("data/reasoning_generated/" + "*.json")
     prompts_plain = glob.glob("data/transcripts_no_reasoning/" + "*.json")
 
-    reasoning_data = []
-
-    for transcript in prompts_reasoning:
-        with open(transcript, "r") as file:
-            prompt_list = json.load(file)
-        reasoning_data = reasoning_data + prompt_list["text"]
+    # reasoning_data = []
+    #
+    # for transcript in prompts_reasoning:
+    #     with open(transcript, "r") as file:
+    #         prompt_list = json.load(file)
+    #     reasoning_data = reasoning_data + prompt_list["text"]
 
     plain_data = []
 
@@ -237,12 +238,12 @@ def make_mega_dataset():
             prompt_list = json.load(reader)
         plain_data = plain_data + prompt_list["text"]
 
-    len_reas = len(reasoning_data)
-    reasoning_train = reasoning_data[0:(len_reas*4/5)]
-    reasoning_test = reasoning_data[(len_reas*4/5):len_reas]
-
-    print("reasoning train examples: " + str(len(reasoning_train)) )
-    print("reasoning test examples: " + str(len(reasoning_test)))
+    # len_reas = len(reasoning_data)
+    # reasoning_train = reasoning_data[0:(len_reas*4/5)]
+    # reasoning_test = reasoning_data[(len_reas*4/5):len_reas]
+    #
+    # print("reasoning train examples: " + str(len(reasoning_train)) )
+    # print("reasoning test examples: " + str(len(reasoning_test)))
 
     len_plain = len(plain_data)
     plain_train = plain_data[0:(len_plain * 4 / 5)]
@@ -252,14 +253,14 @@ def make_mega_dataset():
     print("plain test examples: " + str(len(plain_test)))
 
     train = {}
-    train["text"] = random.shuffle(reasoning_train + plain_train)
+    train["text"] = random.shuffle(plain_train) #reasoning_train +
 
     test = {}
-    test["text"] = random.shuffle(reasoning_test + plain_test)
-    with open("data/train_files/mix_reasoning_plain_all_train.json", "w") as outfile:
+    test["text"] = random.shuffle(plain_test) #reasoning_train +
+    with open("data/train_files/mix_plain_all_train.json", "w") as outfile:
         outfile.write(json.dumps(train))
 
-    with open("data/train_files/mix_reasoning_plain_all_test.json", "w") as outfile:
+    with open("data/train_files/mix_plain_all_test.json", "w") as outfile:
         outfile.write(json.dumps(test))
 
 
@@ -288,5 +289,5 @@ EOS_token = tokenizer.eos_token
 
 print("loaded model")
 
-cycle_through_transcripts(location, save_path, True)
-
+# cycle_through_transcripts(location, save_path, True)
+make_mega_dataset()
