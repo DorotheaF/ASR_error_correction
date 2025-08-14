@@ -1,21 +1,28 @@
 import json
+import random
 
 from unsloth import FastLanguageModel, FastModel
 import torch
 import os
 from trl import SFTTrainer, SFTConfig
-from datasets import Dataset
+from datasets import load_dataset
 
+location = ""
+# location = "/mnt/c/Users/Dorot/Emotive Computing Dropbox/Dorothea French/ASR_error_correction/"
 
-with open("data/reasoning_generated/ASR_human_training_test.json", "r") as file:
-    prompt_list = json.load(file)
+with open(location + "data/train_files/mix_plain_all_train.json", "r") as file:
+    prompts = json.load(file)
 
-prompts = {}
-prompts["text"] = prompt_list
-dataset = Dataset.from_dict(prompts)
+data_files = {"train": "data/train_files/mix_plain_all_train.json", "test": "data/train_files/mix_plain_all_test.json"}
+dataset = load_dataset("json", data_dir=location, data_files=data_files)
+
+dataset = dataset.shuffle(seed=42)
+print(dataset)
+
 
 model, tokenizer = FastModel.from_pretrained(
-    model_name = "unsloth/DeepSeek-R1-Distill-Llama-70B-bnb-4bit", #TODO
+    # model_name = "unsloth/DeepSeek-R1-Distill-Llama-70B-bnb-4bit", #TODO
+    model_name = "unsloth/DeepSeek-R1-Distill-Qwen-32B-unsloth-bnb-4bit",
     # model_name = "unsloth/DeepSeek-R1-Distill-Qwen-1.5B-unsloth-bnb-4bit",
     max_seq_length = 2048, # Choose any for long context!
     load_in_4bit = True,  # 4 bit quantization to reduce memory
@@ -43,7 +50,7 @@ model = FastLanguageModel.get_peft_model(
 
 trainer = SFTTrainer(
     model = model,
-    train_dataset = dataset,
+    train_dataset = dataset['train'],
     tokenizer = tokenizer,
     args = SFTConfig(
         # max_seq_length = 2048,
@@ -62,7 +69,7 @@ trainer.train()
 
 FastLanguageModel.for_inference(model)
 
-model.save_pretrained("finetuned_trial_1_deepseek70")
+model.save_pretrained("finetuned_trial_1_deepseek32")
 
 # tokenizer.save_pretrained("finetuned_trial_1_deepseek70")
 # # Go to https://github.com/unslothai/unsloth/wiki for advanced tips like

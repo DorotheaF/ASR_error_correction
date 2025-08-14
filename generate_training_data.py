@@ -5,8 +5,10 @@ import random
 
 # import ollama
 import pandas as pd
-from unsloth import FastLanguageModel
+# from unsloth import FastLanguageModel
 from datasets import Dataset
+import math
+
 
 def generate_error_thinking(transcript):
     #have it check if the edited utterance and utterance match exactly, and if not explain what error in the transcription is and why it occurred
@@ -220,9 +222,10 @@ def cycle_through_transcripts(location, save_path, generate):
 
 
 
-def make_mega_dataset():
+def make_mega_dataset(location):
     # prompts_reasoning = glob.glob("data/reasoning_generated/" + "*.json")
-    prompts_plain = glob.glob("data/transcripts_no_reasoning/" + "*.json")
+    # prompts_plain = glob.glob("data/transcripts_no_reasoning/" + "*.json")
+    prompts_plain = glob.glob(location + "data/transcripts_no_reasoning/" + "*.json")
 
     # reasoning_data = []
     #
@@ -239,55 +242,63 @@ def make_mega_dataset():
         plain_data = plain_data + prompt_list["text"]
 
     # len_reas = len(reasoning_data)
-    # reasoning_train = reasoning_data[0:(len_reas*4/5)]
-    # reasoning_test = reasoning_data[(len_reas*4/5):len_reas]
+    # reasoning_train = reasoning_data[0:math.floor(len_reas*4/5)]
+    # reasoning_test = reasoning_data[math.floor(len_reas*4/5):len_reas]
     #
     # print("reasoning train examples: " + str(len(reasoning_train)) )
     # print("reasoning test examples: " + str(len(reasoning_test)))
 
     len_plain = len(plain_data)
-    plain_train = plain_data[0:(len_plain * 4 / 5)]
-    plain_test = plain_data[(len_plain * 4 / 5):len_plain]
+    plain_train = plain_data[0:math.floor((len_plain * 4 / 5))]
+    plain_test = plain_data[math.floor(len_plain * 4 / 5):len_plain]
 
     print("plain train examples: " + str(len(plain_train)))
     print("plain test examples: " + str(len(plain_test)))
 
-    train = {}
-    train["text"] = random.shuffle(plain_train) #reasoning_train +
+    train = plain_train # + reasoning_train
+    train_dicts = []
+    for item in train:
+        new_dict = {"text": item}
+        train_dicts.append(new_dict)
 
-    test = {}
-    test["text"] = random.shuffle(plain_test) #reasoning_train +
-    with open("data/train_files/mix_plain_all_train.json", "w") as outfile:
-        outfile.write(json.dumps(train))
 
-    with open("data/train_files/mix_plain_all_test.json", "w") as outfile:
-        outfile.write(json.dumps(test))
+    test = plain_test # + reasoning_test
+    test_dicts = []
+    for item in test:
+        new_dict = {"text": item}
+        test_dicts.append(new_dict)
+
+    with open(location + "data/train_files/mix_plain_all_train.json", "w") as outfile:
+        outfile.write(json.dumps(train_dicts))
+
+    with open(location + "data/train_files/mix_plain_all_test.json", "w") as outfile:
+        outfile.write(json.dumps(test_dicts))
 
 
 
 print("started")
 
-# location = "/mnt/c/Users/Dorot/Emotive Computing Dropbox/Dorothea French/ASR_error_correction/data/transcripts_test/"
-# save_path = "/mnt/c/Users/Dorot/Emotive Computing Dropbox/Dorothea French/ASR_error_correction/data/reasoning_generated/"
+location = "/mnt/c/Users/Dorot/Emotive Computing Dropbox/Dorothea French/ASR_error_correction/data/transcripts_no_reasoning/"
+save_path = "/mnt/c/Users/Dorot/Emotive Computing Dropbox/Dorothea French/ASR_error_correction/data/transcripts_no_reasoning/"
 
-location = "data/transcripts/"
-save_path = "data/reasoning_generated/"
+# location = "data/transcripts/"
+# save_path = "data/reasoning_generated/"
 #
 # location = "data/transcripts_no_reasoning/"
 # save_path = "data/transcripts_no_reasoning/"
 
-model, tokenizer = FastLanguageModel.from_pretrained(
-    model_name = "unsloth/DeepSeek-R1-Distill-Qwen-32B-unsloth-bnb-4bit", #TODO
-    # model_name = "unsloth/DeepSeek-R1-Distill-Qwen-1.5B-unsloth-bnb-4bit",
-    max_seq_length = 2048, # Choose any for long context!
-    load_in_4bit = True,  # 4 bit quantization to reduce memory
-    load_in_8bit = False, # [NEW!] A bit more accurate, uses 2x memory
-    full_finetuning = False, # [NEW!] We have full finetuning now!
-    token = os.getenv("HUGGING_FACE"), # use one if using gated models #TODO
-)
-EOS_token = tokenizer.eos_token
+# model, tokenizer = FastLanguageModel.from_pretrained(
+#     # model_name = "unsloth/DeepSeek-R1-Distill-Qwen-32B-unsloth-bnb-4bit", #TODO
+#     model_name = "unsloth/DeepSeek-R1-Distill-Qwen-1.5B-unsloth-bnb-4bit",
+#     max_seq_length = 2048, # Choose any for long context!
+#     load_in_4bit = True,  # 4 bit quantization to reduce memory
+#     load_in_8bit = False, # [NEW!] A bit more accurate, uses 2x memory
+#     full_finetuning = False, # [NEW!] We have full finetuning now!
+#     token = os.getenv("HUGGING_FACE"), # use one if using gated models #TODO
+# )
+# EOS_token = tokenizer.eos_token
 
 print("loaded model")
 
-# cycle_through_transcripts(location, save_path, True)
-make_mega_dataset()
+# cycle_through_transcripts(location, save_path, False)
+make_mega_dataset("/mnt/c/Users/Dorot/Emotive Computing Dropbox/Dorothea French/ASR_error_correction/")
