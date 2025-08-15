@@ -70,7 +70,7 @@ trainer.train()
 
 FastLanguageModel.for_inference(model)
 
-model.save_pretrained("finetuned_trial_1_deepseek32")
+model.save_pretrained("finetuned_trial_1_deepseek32_1")
 
 # tokenizer.save_pretrained("finetuned_trial_1_deepseek70")
 # # Go to https://github.com/unslothai/unsloth/wiki for advanced tips like
