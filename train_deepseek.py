@@ -8,22 +8,25 @@ from trl import SFTTrainer, SFTConfig
 from datasets import load_dataset
 
 location = ""
-# location = "/mnt/c/Users/Dorot/Emotive Computing Dropbox/Dorothea French/ASR_error_correction/"
+location = "/mnt/c/Users/Dorot/Emotive Computing Dropbox/Dorothea French/ASR_error_correction/"
 
-with open(location + "data/train_files/mix_plain_all_train.json", "r") as file:
+with open(location + "data/train_files/all_train.json", "r") as file:
     prompts = json.load(file)
 
-data_files = {"train": "data/train_files/mix_plain_all_train.json", "test": "data/train_files/mix_plain_all_test.json"}
-dataset = load_dataset("json", data_dir=location, data_files=data_files)
+# data_files = {"train": "data/train_files/all_train.json"}
+dataset = load_dataset("json", data_dir=location, data_files="data/train_files/all_train.json")
 
 dataset = dataset.shuffle(seed=42)
+dataset = dataset.map(lambda x: {"text": x["text_reasoning"]})
+
 print(dataset)
+print(dataset['train']['text'][0])
 
 
 model, tokenizer = FastModel.from_pretrained(
     # model_name = "unsloth/DeepSeek-R1-Distill-Llama-70B-bnb-4bit", #TODO
-    model_name = "unsloth/DeepSeek-R1-Distill-Qwen-32B-unsloth-bnb-4bit",
-    # model_name = "unsloth/DeepSeek-R1-Distill-Qwen-1.5B-unsloth-bnb-4bit",
+    # model_name = "unsloth/DeepSeek-R1-Distill-Qwen-32B-unsloth-bnb-4bit",
+    model_name = "unsloth/DeepSeek-R1-Distill-Qwen-1.5B-unsloth-bnb-4bit",
     max_seq_length = 2048, # Choose any for long context!
     load_in_4bit = True,  # 4 bit quantization to reduce memory
     load_in_8bit = False, # [NEW!] A bit more accurate, uses 2x memory
