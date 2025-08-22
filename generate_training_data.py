@@ -200,7 +200,7 @@ def generate_reasoning(location, save_path):
     print(len(transcripts))
 
 
-    for file in transcripts[160:len(transcripts)]:
+    for file in transcripts[0:len(transcripts)]:
         file_name = file.rsplit("/",1)[1].split(".xlsx")[0]
         if file_name not in transcripts_finished:
             print(file)

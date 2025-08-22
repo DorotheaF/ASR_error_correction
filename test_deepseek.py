@@ -60,7 +60,7 @@ def generate_corrections(transcript):
         # TODO generate WER for corrected and OG version
 
 
-
+print("loading")
 
 model, tokenizer = FastModel.from_pretrained(
     model_name = "finetuned_trial_1_deepseek32_1",
@@ -71,8 +71,9 @@ model, tokenizer = FastModel.from_pretrained(
 FastLanguageModel.for_inference(model)
 
 
+
 location = ""
-location = "/mnt/c/Users/Dorot/Emotive Computing Dropbox/Dorothea French/ASR_error_correction/"
+# location = "/mnt/c/Users/Dorot/Emotive Computing Dropbox/Dorothea French/ASR_error_correction/"
 
 
 
