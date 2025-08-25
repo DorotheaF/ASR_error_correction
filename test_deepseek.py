@@ -28,7 +28,7 @@ def generate_corrections(transcript):
     transcript["test_time_response"] = ""
     for i in range(3, length_transcript - 3):
         print(i)
-        utterance = transcript.loc[i, 'speaker'] + ": " + transcript.loc[i, 'ASR']
+        utterance =  "\n<middle> " + transcript.loc[i, 'speaker'] + ": " + transcript.loc[i, 'ASR']  + " </middle>\n"
         pre_context = ((transcript.loc[i - 3, 'speaker'] + ": " + transcript.loc[i - 3, 'ASR'] + " \n" +
                         transcript.loc[i - 2, 'speaker'] + ": " + transcript.loc[i - 2, 'ASR']) + " \n" +
                        transcript.loc[i - 1, 'speaker'] + ": " + transcript.loc[i - 1, 'ASR'])
@@ -42,6 +42,7 @@ def generate_corrections(transcript):
         prompt = prompt_style_test.format(pre_context, utterance, post_context,"")
 
         input = tokenizer(prompt, return_tensors="pt").to("cuda")
+        inpur = tokenizer(prompt, ).to
         output = model.generate(
             **input,
             max_new_tokens=2048,
@@ -63,8 +64,8 @@ def generate_corrections(transcript):
 print("loading")
 
 model, tokenizer = FastModel.from_pretrained(
-    # model_name = "finetuned_trial_1_deepseek32_1",
-    model_name = "unsloth/DeepSeek-R1-Distill-Qwen-32B-unsloth-bnb-4bit",
+    model_name = "finetuned_trial_1_deepseek32_1",
+    # model_name = "unsloth/DeepSeek-R1-Distill-Qwen-32B-unsloth-bnb-4bit",
     max_seq_length = 2048, # Choose any for long context!
     load_in_4bit = True,  # 4 bit quantization to reduce memory
     # token = os.getenv("HUGGING_FACE"), # use one if using gated models #TODO
