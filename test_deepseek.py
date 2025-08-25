@@ -91,7 +91,7 @@ tran_num = 0
 for file in transcripts_test:
     print(tran_num)
     tran_num += 1
-    file_name = location + "data/reasoning_generated/" + file + "_generated_reasoning.xlsx"
+    file_name = location + "data/transcripts/" + file + ".xlsx"
     transcript = pd.read_excel(file_name)
     transcript_corrected = generate_corrections(transcript, location + "data/test_files/" + file + "_corrected.xlsx")
     transcript_corrected.to_excel(location + "data/test_files/" + file + "_corrected.xlsx")
