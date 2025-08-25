@@ -19,7 +19,6 @@ def generate_corrections(transcript):
     <context> {} </context>
 
     ### Response:
-    <think>
     """
 
     length_transcript = len(transcript)
