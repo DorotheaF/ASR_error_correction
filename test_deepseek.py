@@ -27,35 +27,39 @@ def generate_corrections(transcript, name):
     transcript["test_time_response"] = ""
     for i in range(3, length_transcript - 3):
         print(i)
-        utterance =  "\n<middle> " + transcript.loc[i, 'speaker'] + ": " + transcript.loc[i, 'ASR']  + " </middle>\n"
-        pre_context = ((transcript.loc[i - 3, 'speaker'] + ": " + transcript.loc[i - 3, 'ASR'] + " \n" +
-                        transcript.loc[i - 2, 'speaker'] + ": " + transcript.loc[i - 2, 'ASR']) + " \n" +
-                       transcript.loc[i - 1, 'speaker'] + ": " + transcript.loc[i - 1, 'ASR'])
+        if not pd.isna(transcript.loc[i, 'ASR']) and str(transcript.loc[i, 'ASR']).strip() != "" and str(
+                transcript.loc[i, 'ASR']).strip().lower() != "nan":
+            utterance =  "\n<middle> " + transcript.loc[i, 'speaker'] + ": " + transcript.loc[i, 'ASR']  + " </middle>\n"
+            pre_context = ((transcript.loc[i - 3, 'speaker'] + ": " + transcript.loc[i - 3, 'ASR'] + " \n" +
+                            transcript.loc[i - 2, 'speaker'] + ": " + transcript.loc[i - 2, 'ASR']) + " \n" +
+                           transcript.loc[i - 1, 'speaker'] + ": " + transcript.loc[i - 1, 'ASR'])
 
-        post_context = ((transcript.loc[i + 1, 'speaker'] + ": " + transcript.loc[i + 1, 'ASR'] + " \n" +
-                         transcript.loc[i + 2, 'speaker'] + ": " + transcript.loc[i + 2, 'ASR']) + " \n" +
-                        transcript.loc[i + 3, 'speaker'] + ": " + transcript.loc[i + 3, 'ASR'])
+            post_context = ((transcript.loc[i + 1, 'speaker'] + ": " + transcript.loc[i + 1, 'ASR'] + " \n" +
+                             transcript.loc[i + 2, 'speaker'] + ": " + transcript.loc[i + 2, 'ASR']) + " \n" +
+                            transcript.loc[i + 3, 'speaker'] + ": " + transcript.loc[i + 3, 'ASR'])
 
 
 
-        prompt = prompt_style_test.format(pre_context, utterance, post_context,"")
+            prompt = prompt_style_test.format(pre_context, utterance, post_context,"")
 
-        input = tokenizer(prompt, return_tensors="pt").to("cuda")
-        inpur = tokenizer(prompt, ).to
-        output = model.generate(
-            **input,
-            max_new_tokens=2048,
-            use_cache=False,
-            # temperature=0.7,
-            # top_p=0.8,
-            # top_k=20,
-            # min_p=0.0,
-        )
-        print("generated")
-        print(tokenizer.decode(output[0], skip_special_tokens=True).split("### Response:")[1])
-        transcript.loc[i, "test_time_response"] = tokenizer.decode(output[0], skip_special_tokens=True).split("### Response:")[1]
-        if i % 50 == 0:
-            transcript.to_excel(name)
+            input = tokenizer(prompt, return_tensors="pt").to("cuda")
+            inpur = tokenizer(prompt, ).to
+            output = model.generate(
+                **input,
+                max_new_tokens=2048,
+                use_cache=False,
+                # temperature=0.7,
+                # top_p=0.8,
+                # top_k=20,
+                # min_p=0.0,
+            )
+            print("generated")
+            print(tokenizer.decode(output[0], skip_special_tokens=True).split("### Response:")[1])
+            transcript.loc[i, "test_time_response"] = tokenizer.decode(output[0], skip_special_tokens=True).split("### Response:")[1]
+            if i % 50 == 0:
+                transcript.to_excel(name)
+
+    return transcript
 
 
         #TODO split response and save as columns
@@ -93,6 +97,7 @@ for file in transcripts_test:
     tran_num += 1
     file_name = location + "data/transcripts/" + file + ".xlsx"
     transcript = pd.read_excel(file_name)
+    transcript['ASR'] = transcript['ASR'].astype(str)
     transcript_corrected = generate_corrections(transcript, location + "data/test_files/" + file + "_corrected.xlsx")
     transcript_corrected.to_excel(location + "data/test_files/" + file + "_corrected.xlsx")
 
