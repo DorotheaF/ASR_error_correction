@@ -2,7 +2,7 @@ import glob
 import json
 import os
 import pandas as pd
-# from unsloth import FastLanguageModel
+from unsloth import FastLanguageModel
 import math
 from dotenv import load_dotenv, dotenv_values
 from openai import OpenAI
@@ -274,6 +274,10 @@ def format_for_train(reasoning_path, train_save_path):
         outfile.write(json.dumps(train_file_white))
     print(i)
 
+    print("total num train: " + str(len(train_file_all)))
+    print("total num black: " + str(len(train_file_black)))
+    print("total num white: " + str(len(train_file_white)))
+
 
 
 
@@ -292,20 +296,20 @@ train_save_path = "/mnt/c/Users/Dorot/Emotive Computing Dropbox/Dorothea French/
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI"))
 #
-# model, tokenizer = FastLanguageModel.from_pretrained(
-#     # model_name = "unsloth/DeepSeek-R1-Distill-Qwen-32B-unsloth-bnb-4bit", #TODO
-#     model_name = "unsloth/DeepSeek-R1-Distill-Qwen-1.5B-unsloth-bnb-4bit",
-#     max_seq_length = 2048, # Choose any for long context!
-#     load_in_4bit = True,  # 4 bit quantization to reduce memory
-#     load_in_8bit = False, # [NEW!] A bit more accurate, uses 2x memory
-#     full_finetuning = False, # [NEW!] We have full finetuning now!
-#     # token = os.getenv("HUGGING_FACE"), # use one if using gated models #TODO
-# )
-# EOS_token = tokenizer.eos_token
+model, tokenizer = FastLanguageModel.from_pretrained(
+    # model_name = "unsloth/DeepSeek-R1-Distill-Qwen-32B-unsloth-bnb-4bit", #TODO
+    model_name = "unsloth/DeepSeek-R1-Distill-Qwen-1.5B-unsloth-bnb-4bit",
+    max_seq_length = 2048, # Choose any for long context!
+    load_in_4bit = True,  # 4 bit quantization to reduce memory
+    load_in_8bit = False, # [NEW!] A bit more accurate, uses 2x memory
+    full_finetuning = False, # [NEW!] We have full finetuning now!
+    # token = os.getenv("HUGGING_FACE"), # use one if using gated models #TODO
+)
+EOS_token = tokenizer.eos_token
 
 print("loaded model")
 
 generate_reasoning(location, save_path)
-# format_for_train(save_path, train_save_path)
+format_for_train(save_path, train_save_path)
 # make_mega_dataset("/mnt/c/Users/Dorot/Emotive Computing Dropbox/Dorothea French/ASR_error_correction/")
 

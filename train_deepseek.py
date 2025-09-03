@@ -16,8 +16,9 @@ with open(location + "data/train_files/all_train.json", "r") as file:
 # data_files = {"train": "data/train_files/all_train.json"}
 dataset = load_dataset("json", data_dir=location, data_files="data/train_files/all_train.json")
 
-dataset = dataset.shuffle(seed=42)
 dataset = dataset.map(lambda x: {"text": x["text_reasoning"]})
+dataset = dataset.shuffle(seed=42)
+
 
 print(dataset)
 print(dataset['train']['text'][0])
@@ -73,7 +74,7 @@ trainer.train()
 
 FastLanguageModel.for_inference(model)
 
-model.save_pretrained("finetuned_trial_1_deepseek32_1")
+model.save_pretrained("finetuned_deepseek32_all_reasoning")
 
 # tokenizer.save_pretrained("finetuned_trial_1_deepseek70")
 # # Go to https://github.com/unslothai/unsloth/wiki for advanced tips like

@@ -1,8 +1,10 @@
 import json
 import random
+import string
 
+import jiwer
 import pandas as pd
-from unsloth import FastLanguageModel, FastModel
+# from unsloth import FastLanguageModel, FastModel
 import torch
 import os
 from trl import SFTTrainer, SFTConfig
@@ -66,21 +68,40 @@ def generate_corrections(transcript, name):
         # TODO generate WER for corrected and OG version
 
 
+
+def calculate_wer(transcript):
+    translator = str.maketrans('', '', string.punctuation)
+
+    length_transcript = len(transcript)
+    for i in range(3, length_transcript - 3):
+        # print(str(i) + "/" + str(length_transcript))
+        if not pd.isna(transcript.loc[i, 'ASR']) and str(transcript.loc[i, 'ASR']).strip() != "" and str(transcript.loc[i, 'ASR']).strip().lower() != "nan":
+            reference = transcript.loc[i, 'transcript']
+            hypothesis = transcript.loc[i, 'corrected_utterance']
+            ASR_orig = transcript.loc[i, 'ASR']
+            if ":" in hypothesis:
+                hypothesis = hypothesis.split(":")[1]
+
+            ref_clean = reference.lower().translate(translator)
+            hyp_clean = hypothesis.lower().translate(translator)
+            asr_clean = ASR_orig.lower().translate(translator)
+
+            output_asr = jiwer.process_words(ref_clean, asr_clean)
+            wer_asr = output_asr.wer
+
+            transcript.loc[i, "ASR_recalc_WER"] = wer_asr
+
+            output = jiwer.process_words(ref_clean, hyp_clean)
+            wer = output.wer
+
+            transcript.loc[i, "corrected_WER"] = wer
+    return transcript
+
+
 print("loading")
 
-model, tokenizer = FastModel.from_pretrained(
-    model_name = "finetuned_trial_1_deepseek32_1",
-    # model_name = "unsloth/DeepSeek-R1-Distill-Qwen-32B-unsloth-bnb-4bit",
-    max_seq_length = 2048, # Choose any for long context!
-    load_in_4bit = True,  # 4 bit quantization to reduce memory
-    # token = os.getenv("HUGGING_FACE"), # use one if using gated models #TODO
-)
-FastLanguageModel.for_inference(model)
-
-
-
 location = ""
-# location = "/mnt/c/Users/Dorot/Emotive Computing Dropbox/Dorothea French/ASR_error_correction/"
+location = "/mnt/c/Users/Dorot/Emotive Computing Dropbox/Dorothea French/ASR_error_correction/"
 
 
 
@@ -91,13 +112,33 @@ train_file_all = []
 train_file_white = []
 train_file_black = []
 
+# tran_num = 0
+# model, tokenizer = FastModel.from_pretrained(
+#     model_name = "finetuned_trial_1_deepseek32_1",
+#     # model_name = "unsloth/DeepSeek-R1-Distill-Qwen-32B-unsloth-bnb-4bit",
+#     max_seq_length = 2048, # Choose any for long context!
+#     load_in_4bit = True,  # 4 bit quantization to reduce memory
+#     # token = os.getenv("HUGGING_FACE"), # use one if using gated models #TODO
+# )
+# FastLanguageModel.for_inference(model)
+#
+#
+# for file in transcripts_test:
+#     print(tran_num)
+#     tran_num += 1
+#     file_name = location + "data/transcripts/" + file + ".xlsx"
+#     transcript = pd.read_excel(file_name)
+#     transcript['ASR'] = transcript['ASR'].astype(str)
+#     transcript_corrected = generate_corrections(transcript, location + "data/test_files/" + file + "_corrected.xlsx")
+#     transcript_corrected.to_excel(location + "data/test_files/" + file + "_corrected.xlsx")
+
 tran_num = 0
 for file in transcripts_test:
     print(tran_num)
     tran_num += 1
-    file_name = location + "data/transcripts/" + file + ".xlsx"
-    transcript = pd.read_excel(file_name)
-    transcript['ASR'] = transcript['ASR'].astype(str)
-    transcript_corrected = generate_corrections(transcript, location + "data/test_files/" + file + "_corrected.xlsx")
-    transcript_corrected.to_excel(location + "data/test_files/" + file + "_corrected.xlsx")
-
+    transcript = pd.read_excel(location + "data/test_files/" + file + "_corrected.xlsx")
+    transcript['corrected_utterance'] = transcript['test_time_response'].apply(lambda x: x.split("3)")[1].split(":")[1] if str(x).strip().lower() != "nan" and "N/A" not in x.split("3)")[1] else x.split("2)")[0].split(":")[1] if str(x).strip().lower() != "nan" else x)
+    transcript['corrected_utterance'] = transcript['corrected_utterance'].astype(str)
+    transcript['transcript'] = transcript['transcript'].astype(str)
+    transcript_corrected = calculate_wer(transcript)
+    transcript_corrected.to_excel(location + "data/test_files/" + file + "_corrected.xlsx", index=False)
