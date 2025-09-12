@@ -8,7 +8,7 @@ from trl import SFTTrainer, SFTConfig
 from datasets import load_dataset
 
 location = ""
-location = "/mnt/c/Users/Dorot/Emotive Computing Dropbox/Dorothea French/ASR_error_correction/"
+# location = "/mnt/c/Users/Dorot/Emotive Computing Dropbox/Dorothea French/ASR_error_correction/"
 
 with open(location + "data/train_files/all_train.json", "r") as file:
     prompts = json.load(file)
