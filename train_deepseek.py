@@ -21,8 +21,9 @@ dataset = dataset.shuffle(seed=42)
 
 
 print(dataset)
-print(dataset['train']['text'][0])
+# print(dataset['train']['text'][0])
 
+print(len(dataset))
 
 model, tokenizer = FastModel.from_pretrained(
     # model_name = "unsloth/DeepSeek-R1-Distill-Llama-70B-bnb-4bit", #TODO
@@ -74,7 +75,10 @@ trainer.train()
 
 FastLanguageModel.for_inference(model)
 
+print("saving to ")
 model.save_pretrained("finetuned_deepseek32_all_reasoning")
+
+print("should have saved")
 
 # tokenizer.save_pretrained("finetuned_trial_1_deepseek70")
 # # Go to https://github.com/unslothai/unsloth/wiki for advanced tips like
