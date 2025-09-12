@@ -20,8 +20,10 @@ dataset = dataset.map(lambda x: {"text": x["text_reasoning"]})
 dataset = dataset.shuffle(seed=42)
 
 
+print("loaded dataset")
+
 print(dataset)
-# print(dataset['train']['text'][0])
+print(dataset['train']['text'][0])
 
 print(len(dataset))
 
