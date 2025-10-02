@@ -39,6 +39,7 @@ model, tokenizer = FastModel.from_pretrained(
     device_map = "balanced"
 )
 
+
 # Do model patching and add fast LoRA weights
 model = FastLanguageModel.get_peft_model(
     model,
