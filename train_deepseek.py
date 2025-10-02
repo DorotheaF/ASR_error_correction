@@ -35,7 +35,8 @@ model, tokenizer = FastModel.from_pretrained(
     load_in_4bit = True,  # 4 bit quantization to reduce memory
     load_in_8bit = False, # [NEW!] A bit more accurate, uses 2x memory
     full_finetuning = False, # [NEW!] We have full finetuning now!
-    token = os.getenv("HUGGING_FACE"), # use one if using gated models #TODO
+    token = os.getenv("HUGGING_FACE"), # use one if using gated models #TODO,
+    device_map = "balanced"
 )
 
 # Do model patching and add fast LoRA weights
