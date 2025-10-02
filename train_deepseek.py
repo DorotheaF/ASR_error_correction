@@ -51,11 +51,14 @@ model = FastLanguageModel.get_peft_model(
     bias = "none",    # Supports any, but = "none" is optimized
     # [NEW] "unsloth" uses 30% less VRAM, fits 2x larger batch sizes!
     use_gradient_checkpointing = "unsloth", # True or "unsloth" for very long context
+
     random_state = 3407,
     max_seq_length = 2048, # Supports RoPE Scaling internally, so choose any!
     use_rslora = False,  # We support rank stabilized LoRA
     loftq_config = None, # And LoftQ
 )
+
+
 
 trainer = SFTTrainer(
     model = model,
@@ -77,7 +80,7 @@ trainer = SFTTrainer(
 trainer.train()
 
 
-FastLanguageModel.for_inference(model)
+# FastLanguageModel.for_inference(model)
 
 print("saving to ")
 model.save_pretrained("finetuned_deepseek32_all_reasoning")
