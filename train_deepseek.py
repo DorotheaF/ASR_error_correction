@@ -81,7 +81,7 @@ trainer.train()
 
 print("finished training")
 
-# FastLanguageModel.for_inference(model)
+FastLanguageModel.for_inference(model)
 
 print("saving to ")
 model.save_pretrained("finetuned_deepseek32_all_reasoning")
