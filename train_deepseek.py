@@ -79,6 +79,7 @@ trainer = SFTTrainer(
 )
 trainer.train()
 
+print("finished training")
 
 # FastLanguageModel.for_inference(model)
 
