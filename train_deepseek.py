@@ -10,11 +10,11 @@ from datasets import load_dataset
 location = ""
 # location = "/mnt/c/Users/Dorot/Emotive Computing Dropbox/Dorothea French/ASR_error_correction/"
 
-with open(location + "data/train_files/all_train.json", "r") as file:
+with open(location + "data/train_files/black_train.json", "r") as file:
     prompts = json.load(file)
 
 # data_files = {"train": "data/train_files/all_train.json"}
-dataset = load_dataset("json", data_dir=location, data_files="data/train_files/all_train.json")
+dataset = load_dataset("json", data_dir=location, data_files="data/train_files/black_train.json")
 
 dataset = dataset.map(lambda x: {"text": x["text_reasoning"]})
 dataset = dataset.shuffle(seed=42)
@@ -84,7 +84,7 @@ print("finished training")
 FastLanguageModel.for_inference(model)
 
 print("saving to ")
-model.save_pretrained("finetuned_deepseek32_all_reasoning")
+model.save_pretrained("finetuned_deepseek32_just_black")
 
 print("should have saved")
 
