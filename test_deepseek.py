@@ -4,7 +4,7 @@ import string
 
 import jiwer
 import pandas as pd
-# from unsloth import FastLanguageModel, FastModel
+from unsloth import FastLanguageModel, FastModel
 import torch
 import os
 from trl import SFTTrainer, SFTConfig
@@ -101,7 +101,7 @@ def calculate_wer(transcript):
 print("loading")
 
 location = ""
-location = "/mnt/c/Users/Dorot/Emotive Computing Dropbox/Dorothea French/ASR_error_correction/"
+# location = "/mnt/c/Users/Dorot/Emotive Computing Dropbox/Dorothea French/ASR_error_correction/"
 
 
 
@@ -113,14 +113,14 @@ train_file_white = []
 train_file_black = []
 
 # tran_num = 0
-# model, tokenizer = FastModel.from_pretrained(
-#     model_name = "finetuned_trial_1_deepseek32_1",
-#     # model_name = "unsloth/DeepSeek-R1-Distill-Qwen-32B-unsloth-bnb-4bit",
-#     max_seq_length = 2048, # Choose any for long context!
-#     load_in_4bit = True,  # 4 bit quantization to reduce memory
-#     # token = os.getenv("HUGGING_FACE"), # use one if using gated models #TODO
-# )
-# FastLanguageModel.for_inference(model)
+model, tokenizer = FastModel.from_pretrained(
+    model_name = "finetuned_deepseek32_all_reasoning",
+    # model_name = "unsloth/DeepSeek-R1-Distill-Qwen-32B-unsloth-bnb-4bit",
+    max_seq_length = 2048, # Choose any for long context!
+    load_in_4bit = True,  # 4 bit quantization to reduce memory
+    # token = os.getenv("HUGGING_FACE"), # use one if using gated models #TODO
+)
+FastLanguageModel.for_inference(model)
 #
 #
 # for file in transcripts_test:
