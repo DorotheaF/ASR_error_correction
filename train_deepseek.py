@@ -88,18 +88,6 @@ model.save_pretrained("finetuned_deepseek32_just_black")
 
 print("should have saved")
 
-model, tokenizer = FastModel.from_pretrained(
-    # model_name = "unsloth/DeepSeek-R1-Distill-Llama-70B-bnb-4bit", #TODO
-    model_name = "finetuned_deepseek32_all_reasoning",
-    # model_name = "unsloth/DeepSeek-R1-Distill-Qwen-1.5B-unsloth-bnb-4bit",
-    max_seq_length = 2048, # Choose any for long context!
-    load_in_4bit = True,  # 4 bit quantization to reduce memory
-    load_in_8bit = False, # [NEW!] A bit more accurate, uses 2x memory
-    full_finetuning = False, # [NEW!] We have full finetuning now!
-    # token = os.getenv("HUGGING_FACE"), # use one if using gated models #TODO,
-    device_map = "balanced"
-)
-
 # tokenizer.save_pretrained("finetuned_trial_1_deepseek70")
 # # Go to https://github.com/unslothai/unsloth/wiki for advanced tips like
 # # (1) Saving to GGUF / merging to 16bit for vLLM
