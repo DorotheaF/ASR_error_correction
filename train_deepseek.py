@@ -10,8 +10,8 @@ from datasets import load_dataset
 location = ""
 # location = "/mnt/c/Users/Dorot/Emotive Computing Dropbox/Dorothea French/ASR_error_correction/"
 
-with open(location + "data/train_files/black_train.json", "r") as file:
-    prompts = json.load(file)
+# with open(location + "data/train_files/black_train.json", "r") as file:
+#     prompts = json.load(file)
 
 # data_files = {"train": "data/train_files/all_train.json"}
 dataset = load_dataset("json", data_dir=location, data_files="data/train_files/black_train.json")
