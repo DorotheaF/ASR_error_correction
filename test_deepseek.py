@@ -45,11 +45,10 @@ def generate_corrections(transcript, name):
             prompt = prompt_style_test.format(pre_context, utterance, post_context,"")
 
             input = tokenizer(prompt, return_tensors="pt").to("cuda")
-            inpur = tokenizer(prompt, ).to
             output = model.generate(
                 **input,
                 max_new_tokens=2048,
-                use_cache=False,
+                use_cache=True,
                 # temperature=0.7,
                 # top_p=0.8,
                 # top_k=20,
